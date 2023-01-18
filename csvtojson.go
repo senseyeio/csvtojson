@@ -12,10 +12,12 @@ import (
 
 func main() {
 	disableFirstRowHeader := flag.Bool("n", false, "Do not use the first row of each file as column names")
+	out := os.Stdout
+
 	flag.Parse()
 	args := flag.Args()
 	if len(args) == 0 {
-		err := processReader(os.Stdin, !*disableFirstRowHeader)
+		err := processReader(os.Stdin, out, !*disableFirstRowHeader)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "error processin stdin: %v", err)
 			os.Exit(1)
@@ -24,7 +26,7 @@ func main() {
 	}
 
 	for _, r := range args {
-		err := processFile(r, !*disableFirstRowHeader)
+		err := processFile(r, out, !*disableFirstRowHeader)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "error processing file %s: %v", r, err)
 			os.Exit(1)
@@ -32,17 +34,17 @@ func main() {
 	}
 }
 
-func processFile(fn string, firstRowHeader bool) error {
+func processFile(fn string, out io.Writer, firstRowHeader bool) error {
 	f, err := os.Open(fn)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
-	
-	return processReader(f, firstRowHeader)
+
+	return processReader(f, out, firstRowHeader)
 }
 
-func processReader(r io.Reader, firstRowHeader bool) error {
+func processReader(r io.Reader, out io.Writer, firstRowHeader bool) error {
 	cr := csv.NewReader(r)
 
 	var header []string
@@ -84,7 +86,7 @@ func processReader(r io.Reader, firstRowHeader bool) error {
 			return fmt.Errorf("line %v: %w", line, err)
 		}
 
-		_, _ = fmt.Fprintln(os.Stdout, string(js))
+		_, _ = fmt.Fprintln(out, string(js))
 	}
 	return nil
 }
