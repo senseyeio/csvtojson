@@ -34,10 +34,11 @@ func main() {
 
 func processFile(fn string, firstRowHeader bool) error {
 	f, err := os.Open(fn)
-	defer f.Close()
 	if err != nil {
 		return err
 	}
+	defer f.Close()
+	
 	return processReader(f, firstRowHeader)
 }
 
@@ -69,8 +70,7 @@ func processReader(r io.Reader, firstRowHeader bool) error {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			line, _ := cr.FieldPos(0)
-			return fmt.Errorf("line %v: %w", line, err)
+			return err
 		}
 
 		tmp := make(map[string]interface{})
@@ -88,5 +88,3 @@ func processReader(r io.Reader, firstRowHeader bool) error {
 	}
 	return nil
 }
-
-
