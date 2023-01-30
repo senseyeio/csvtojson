@@ -2,8 +2,10 @@
 
 Reads a CSV file and emits one JSON object for each row of the input CSV.
 
-By default, it assumes the first row of the file contains headings.  To include the first row of the file
-as data, use the `-n` flag.
+## Flags
+
+ - `-n` Do not use the first row of the file as headings.  Treat the first row as data.
+ - `-t <col1,...>` Use the comma-separated list of values,`<col1,...>`, as column headings. Use of this flag implies `-n`.
 
 Aside from flags, all command line arguments are treated as filenames to read.  If no files are specified, input
 is read from STDIN.
